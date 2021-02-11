@@ -4,6 +4,9 @@
    - cd to 'build' directory
    - run the command 'cmake ..'
    - run the command 'make'
+   
+ - How to run tests
+   - After build: Run the command 'ctest --output-on-failure'
 
  - After build -
    - The built smart contract is under the 'token' directory in the 'build' directory
