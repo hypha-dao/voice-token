@@ -1,8 +1,17 @@
 #include <voice.hpp>
 #include <eosio/system.hpp>
 #include <decay.hpp>
+#include <trail.hpp>
 
 namespace hypha {
+
+    void voice::migrate(const name& trailContract)
+    {
+        // trailservice::trail::voters_table v_t(trailContract);
+        // auto v_itr = v_t.find(common::S_HVOICE.code().raw());
+
+    }
+
     void voice::create( const name&    issuer,
                         const asset&   maximum_supply,
                         const uint64_t decay_period,
