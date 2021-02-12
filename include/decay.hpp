@@ -1,5 +1,5 @@
 #pragma once
-#include <eosio/eosio.hpp>
+#include <cstdint>
 
 namespace hypha {
 

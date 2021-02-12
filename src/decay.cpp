@@ -8,7 +8,7 @@ namespace hypha {
             const uint64_t lastPeriod,
             const DecayConfig &config
     ) {
-        if (config.decayPerPeriod == 0 || config.decayPeriod == 0) {
+        if (config.decayPerPeriod == 0 || config.decayPeriod == 0 || lastPeriod > config.evaluationTime) {
             return DecayResult{
                     .needsUpdate = false,
                     .newPeriod   = lastPeriod,
