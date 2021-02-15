@@ -6,7 +6,8 @@ include(CMakeLists-ExternalProjects.txt)
 add_contract( voice.hypha voice
         voice.cpp
         decay.cpp
-        docs.wasm
+        ${PROJECT_BINARY_DIR}/docs.wasm
 )
+
 target_include_directories( voice PUBLIC ${CMAKE_SOURCE_DIR}/../include )
 # target_ricardian_directory( voice ${CMAKE_SOURCE_DIR}/../ricardian )

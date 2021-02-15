@@ -16,10 +16,14 @@ ExternalProject_Add(
   TEST_COMMAND ""
 )
 
+set(PARENT_PROJECT_BINARY_DIR ${PROJECT_BINARY_DIR})
+ExternalProject_Get_Property(document-graph BINARY_DIR)
+
 ExternalProject_Add_Step(
   document-graph CopyToBin
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ExternalProject_Get_Property(document-graph PROJECT_BINARY_DIR)/docs ${PROJECT_BINARY_DIR}
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${BINARY_DIR}/docs ${PARENT_PROJECT_BINARY_DIR}
   DEPENDEES install
+  BYPRODUCTS ${PARENT_PROJECT_BINARY_DIR}/docs.wasm
 )
 
 set(document_graph_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/deps/document-graph/include")
