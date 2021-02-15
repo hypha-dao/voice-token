@@ -18,3 +18,5 @@ readiness.txt
 .DS_Store
 telos_test.sh
 telos.sh
+/deps
+cmake-build-debug

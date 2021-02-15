@@ -7,6 +7,8 @@ if(EOSIO_CDT_ROOT STREQUAL "" OR NOT EOSIO_CDT_ROOT)
    find_package(eosio.cdt)
 endif()
 
+include(CMakeLists-ExternalProjects.txt)
+
 ExternalProject_Add(
    voice-hypha
    SOURCE_DIR ${CMAKE_SOURCE_DIR}/src
