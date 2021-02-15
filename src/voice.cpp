@@ -1,15 +1,53 @@
 #include <voice.hpp>
-#include <eosio/system.hpp>
 #include <decay.hpp>
+#include <eosio/system.hpp>
+#include <document_graph/edge.hpp>
+#include <document_graph/document.hpp>
 #include <trail.hpp>
 
 namespace hypha {
 
-    void voice::migrate(const name& trailContract)
+    void voice::migrate(name trailContract)
     {
-        // trailservice::trail::voters_table v_t(trailContract);
-        // auto v_itr = v_t.find(common::S_HVOICE.code().raw());
+        require_auth( get_self() );
+        symbol S_HVOICE("HVOICE", 2);
 
+        uint64_t index = eosio::name("member").value;
+        Edge::edge_table e_t(get_self(), get_self().value);
+        auto edge_name_idx = e_t.get_index<eosio::name("edgename")>();
+        auto edgeItr = edge_name_idx.find(index);
+        uint64_t currentTime = this->get_current_time();
+
+        while (edgeItr != edge_name_idx.end() && edgeItr->by_edge_name() == index)
+        {
+            Edge edge = *edgeItr;
+            Document memberDoc(get_self(), edge.getToNode());
+            auto memberDetails = memberDoc.getContentWrapper().get("details", "member");
+            if (memberDetails.first != -1)
+            {
+                eosio::name memberName = memberDetails.second->getAs<eosio::name>();
+                trailservice::trail::voters_table v_t(trailContract, memberName.value);
+                auto v_itr = v_t.find(S_HVOICE.code().raw());
+                if (v_itr != v_t.end()) {
+                    eosio::asset hvoice = v_itr->liquid;
+
+                    accounts accountstable( get_self(), memberName.value );
+                    auto accountItr = accountstable.find( S_HVOICE.raw() );
+                    if (accountItr != accountstable.end()) {
+                        accountstable.modify( accountItr, get_self(), [&]( auto& a ) {
+                            a.balance.amount = hvoice.amount;
+                            a.last_decay_period = currentTime;
+                        });
+                    } else {
+                        accountstable.emplace(get_self(), [&]( auto& a ) {
+                            a.balance = hvoice;
+                            a.last_decay_period = currentTime;
+                        });
+                    }
+                }
+            }
+            edgeItr++;
+        }
     }
 
     void voice::create( const name&    issuer,

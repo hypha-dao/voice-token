@@ -19,10 +19,11 @@ class [[eosio::contract("voice.hypha")]] voice : public eosio::contract {
         using contract::contract;
 
         /**
-         * Runs a migration of HVOICE from trailservice-voters
+         * Runs a migration of HVOICE from trail.
+         *  @pre Assumes HVOICE token is already created
          */
         [[eosio::action]]
-        void migrate(const name& trailContract);
+        void migrate(name trailContract);
 
         /**
          * Allows `issuer` account to create a token in supply of `maximum_supply`. If validation is successful a new entry in statstable for token symbol scope gets created.
