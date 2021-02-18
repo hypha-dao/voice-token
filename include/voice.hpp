@@ -51,6 +51,31 @@ class [[eosio::contract("voice.hypha")]] voice : public eosio::contract {
         [[eosio::action]]
         void issue( const name& to, const asset& quantity, const string& memo );
 
+        /**
+          * The opposite for create action, if all validations succeed,
+          * it debits the statstable.supply amount.
+          *
+          * @param quantity - the quantity of tokens to retire,
+          * @param memo - the memo string to accompany the transaction.
+          */
+        [[eosio::action]]
+        void retire( const asset& quantity, const string& memo );
+
+        /**
+          * Allows `from` account to transfer to `to` account the `quantity` tokens.
+          * One account is debited and the other is credited with quantity tokens.
+          *
+          * @param from - the account to transfer from,
+          * @param to - the account to be transferred to,
+          * @param quantity - the quantity of tokens to be transferred,
+          * @param memo - the memo string to accompany the transaction.
+          */
+        [[eosio::action]]
+        void transfer( const name&    from,
+                       const name&    to,
+                       const asset&   quantity,
+                       const string&  memo );
+
 
         // Runs decaying actions
         ACTION decay(const name& owner, symbol symbol);

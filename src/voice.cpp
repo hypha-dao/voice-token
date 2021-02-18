@@ -109,6 +109,59 @@ namespace hypha {
         add_balance( st.issuer, quantity, st.issuer );
     }
 
+    void voice::retire( const asset& quantity, const string& memo )
+    {
+        auto sym = quantity.symbol;
+        check( sym.is_valid(), "invalid symbol name" );
+        check( memo.size() <= 256, "memo has more than 256 bytes" );
+
+        stats statstable( get_self(), sym.code().raw() );
+        auto existing = statstable.find( sym.code().raw() );
+        check( existing != statstable.end(), "token with symbol does not exist" );
+        const auto& st = *existing;
+
+        check( get_self() == st.issuer, "tokens can only be retired by issuer account" );
+
+        require_auth( st.issuer );
+        check( quantity.is_valid(), "invalid quantity" );
+        check( quantity.amount > 0, "must retire positive quantity" );
+
+        check( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
+
+        statstable.modify( st, same_payer, [&]( auto& s ) {
+            s.supply -= quantity;
+        });
+
+        sub_balance( st.issuer, quantity );
+    }
+
+    void voice::transfer( const name&    from,
+                          const name&    to,
+                          const asset&   quantity,
+                          const string&  memo )
+    {
+        check( from != to, "cannot transfer to self" );
+        require_auth( from );
+        check( is_account( to ), "to account does not exist");
+        auto sym = quantity.symbol.code();
+        stats statstable( get_self(), sym.raw() );
+        const auto& st = statstable.get( sym.raw() );
+
+        check( from == st.issuer, "tokens can only be transferred by issuer account" );
+        require_recipient( from );
+        require_recipient( to );
+
+        check( quantity.is_valid(), "invalid quantity" );
+        check( quantity.amount > 0, "must transfer positive quantity" );
+        check( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
+        check( memo.size() <= 256, "memo has more than 256 bytes" );
+
+        auto payer = has_auth( to ) ? to : from;
+
+        sub_balance( from, quantity );
+        add_balance( to, quantity, payer );
+    }
+
     void voice::decay(const name& owner, symbol symbol) {
         stats statstable( get_self(), symbol.code().raw() );
         auto existing = statstable.find( symbol.code().raw() );

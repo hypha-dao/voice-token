@@ -1,3 +1,4 @@
+project(voice-hypha-build)
 set(EOSIO_WASM_OLD_BEHAVIOR "Off")
 find_package(eosio.cdt)
 
@@ -6,7 +7,7 @@ include(CMakeLists-ExternalProjects.txt)
 add_contract( voice.hypha voice
         voice.cpp
         decay.cpp
-        ${PROJECT_BINARY_DIR}/docs.wasm
+        ${CMAKE_BINARY_DIR}/docgraph/docs/docs.wasm
 )
 
 target_include_directories( voice PUBLIC ${CMAKE_SOURCE_DIR}/../include )
