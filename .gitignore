@@ -20,3 +20,4 @@ telos_test.sh
 telos.sh
 /src/deps
 cmake-build-debug
+/.idea
