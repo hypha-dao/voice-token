@@ -3,7 +3,7 @@
  - How to Build -
    - cd to 'build' directory
    - run the command 'cmake ..'
-   - run the command 'make || make'. There is a small issue in the cmake config and you have to run it twice the first time.
+   - run the command 'make'.
    
  - How to run tests
    - After build: Run the command 'ctest --output-on-failure'
