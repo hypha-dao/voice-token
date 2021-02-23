@@ -23,7 +23,7 @@ class [[eosio::contract("voice.hypha")]] voice : public eosio::contract {
          *  @pre Assumes HVOICE token is already created
          */
         [[eosio::action]]
-        void migrate(name trailContract);
+        void migrate(name daoContract, name trailContract);
 
         /**
          * Allows `issuer` account to create a token in supply of `maximum_supply`. If validation is successful a new entry in statstable for token symbol scope gets created.

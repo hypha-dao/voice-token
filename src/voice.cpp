@@ -7,13 +7,14 @@
 
 namespace hypha {
 
-    void voice::migrate(name trailContract)
+    void voice::migrate(name daoContract, name trailContract)
     {
+        eosio::print_f("Starting HVOICE migration:\n");
         require_auth( get_self() );
         symbol S_HVOICE("HVOICE", 2);
 
         uint64_t index = eosio::name("member").value;
-        Edge::edge_table e_t(get_self(), get_self().value);
+        Edge::edge_table e_t(daoContract, daoContract.value);
         auto edge_name_idx = e_t.get_index<eosio::name("edgename")>();
         auto edgeItr = edge_name_idx.find(index);
         uint64_t currentTime = this->get_current_time();
@@ -21,7 +22,8 @@ namespace hypha {
         while (edgeItr != edge_name_idx.end() && edgeItr->by_edge_name() == index)
         {
             Edge edge = *edgeItr;
-            Document memberDoc(get_self(), edge.getToNode());
+            Document memberDoc(daoContract, edge.getToNode());
+
             auto memberDetails = memberDoc.getContentWrapper().get("details", "member");
             if (memberDetails.first != -1)
             {
