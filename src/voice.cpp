@@ -161,7 +161,7 @@ namespace hypha {
         );
 
         if (result.needsUpdate) {
-            from_acnts.modify( from, owner, [&]( auto& a ) {
+            from_acnts.modify( from, get_self(), [&]( auto& a ) {
                 a.balance.amount = result.newBalance;
                 a.last_decay_period = result.newPeriod;
             });
