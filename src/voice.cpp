@@ -229,7 +229,7 @@ namespace hypha {
     }
 
     uint64_t voice::get_current_time() {
-        return eosio::time_point().sec_since_epoch();
+        return eosio::current_time_point().sec_since_epoch();
 
     }
 }
