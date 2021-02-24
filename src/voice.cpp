@@ -111,32 +111,6 @@ namespace hypha {
         add_balance( st.issuer, quantity, st.issuer );
     }
 
-    void voice::retire( const asset& quantity, const string& memo )
-    {
-        auto sym = quantity.symbol;
-        check( sym.is_valid(), "invalid symbol name" );
-        check( memo.size() <= 256, "memo has more than 256 bytes" );
-
-        stats statstable( get_self(), sym.code().raw() );
-        auto existing = statstable.find( sym.code().raw() );
-        check( existing != statstable.end(), "token with symbol does not exist" );
-        const auto& st = *existing;
-
-        check( get_self() == st.issuer, "tokens can only be retired by issuer account" );
-
-        require_auth( st.issuer );
-        check( quantity.is_valid(), "invalid quantity" );
-        check( quantity.amount > 0, "must retire positive quantity" );
-
-        check( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
-
-        statstable.modify( st, same_payer, [&]( auto& s ) {
-            s.supply -= quantity;
-        });
-
-        sub_balance( st.issuer, quantity );
-    }
-
     void voice::transfer( const name&    from,
                           const name&    to,
                           const asset&   quantity,
@@ -170,11 +144,15 @@ namespace hypha {
         check( existing != statstable.end(), "token with symbol does not exist, create token before issue" );
 
         accounts from_acnts(get_self(), owner.value);
-        const auto& from = from_acnts.get( symbol.code().raw(), "no balance object found" );
+        const auto from = from_acnts.find( symbol.code().raw());
+        if (from == from_acnts.end()) {
+            // No balance exists yet, nothing to do
+            return;
+        }
 
         const DecayResult result = hypha::decay(
-                from.balance.amount,
-                from.last_decay_period,
+                from->balance.amount,
+                from->last_decay_period,
                 DecayConfig{
                     .decayPeriod    = existing->decay_period,
                     .decayPerPeriod = existing->decay_per_period,
@@ -210,6 +188,7 @@ namespace hypha {
         if( to == to_acnts.end() ) {
             to_acnts.emplace( ram_payer, [&]( auto& a ){
                 a.balance = value;
+                a.last_decay_period = this->get_current_time();
             });
         } else {
             to_acnts.modify( to, same_payer, [&]( auto& a ) {
