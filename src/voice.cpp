@@ -36,11 +36,13 @@ namespace hypha {
                     accounts accountstable( get_self(), memberName.value );
                     auto accountItr = accountstable.find( S_HVOICE.raw() );
                     if (accountItr != accountstable.end()) {
+                        update_issued(hvoice - accountItr->balance);
                         accountstable.modify( accountItr, get_self(), [&]( auto& a ) {
                             a.balance.amount = hvoice.amount;
                             a.last_decay_period = currentTime;
                         });
                     } else {
+                        update_issued(hvoice);
                         accountstable.emplace(get_self(), [&]( auto& a ) {
                             a.balance = hvoice;
                             a.last_decay_period = currentTime;
@@ -161,6 +163,9 @@ namespace hypha {
         );
 
         if (result.needsUpdate) {
+            eosio::asset updated_issued = from->balance;
+            updated_issued.amount = result.newBalance - updated_issued.amount;
+            update_issued(updated_issued);
             from_acnts.modify( from, get_self(), [&]( auto& a ) {
                 a.balance.amount = result.newBalance;
                 a.last_decay_period = result.newPeriod;
@@ -195,6 +200,24 @@ namespace hypha {
                 a.balance += value;
             });
         }
+    }
+
+    void voice::update_issued(const asset& quantity) 
+    {
+        auto sym = quantity.symbol;
+        check( sym.is_valid(), "invalid symbol name" );
+
+        stats statstable( get_self(), sym.code().raw() );
+        auto existing = statstable.find( sym.code().raw() );
+        check( existing != statstable.end(), "token with symbol does not exist" );
+        const auto& st = *existing;
+
+        check( quantity.is_valid(), "invalid quantity" );
+        check( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
+
+        statstable.modify( st, same_payer, [&]( auto& s ) {
+            s.supply += quantity;
+        });
     }
 
     void voice::open( const name& owner, const symbol& symbol, const name& ram_payer )

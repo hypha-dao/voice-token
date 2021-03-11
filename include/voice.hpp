@@ -138,6 +138,7 @@ class [[eosio::contract("voice.hypha")]] voice : public eosio::contract {
 
         void sub_balance( const name& owner, const asset& value );
         void add_balance( const name& owner, const asset& value, const name& ram_payer );
+        void update_issued(const asset& quantity);
 
         static uint64_t get_current_time();
     };
