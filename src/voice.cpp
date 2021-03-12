@@ -34,7 +34,7 @@ namespace hypha {
                     eosio::asset hvoice = v_itr->liquid;
 
                     accounts accountstable( get_self(), memberName.value );
-                    auto accountItr = accountstable.find( S_HVOICE.raw() );
+                    auto accountItr = accountstable.find( S_HVOICE.code().raw() );
                     if (accountItr != accountstable.end()) {
                         update_issued(hvoice - accountItr->balance);
                         accountstable.modify( accountItr, get_self(), [&]( auto& a ) {
