@@ -7,6 +7,8 @@
 
 namespace hypha {
 
+    constexpr uint64_t DECAY_PER_PERIOD_X10M = 10000000;
+
     void voice::migrate(name daoContract, name trailContract)
     {
         eosio::print_f("Starting HVOICE migration:\n");
@@ -53,11 +55,22 @@ namespace hypha {
             edgeItr++;
         }
     }
+    
+    void voice::del( const asset&   symbol)
+    {
+        require_auth( get_self() );
+        auto sym = symbol.symbol;
+        check( sym.is_valid(), "invalid symbol name" );
+        stats statstable( get_self(), sym.code().raw() );
+        auto existing = statstable.find( sym.code().raw() );
+        check( existing != statstable.end(), "token with symbol does not exists" );
+        statstable.erase(existing);
+    }
 
     void voice::create( const name&    issuer,
                         const asset&   maximum_supply,
                         const uint64_t decay_period,
-                        const float    decay_per_period )
+                        const uint64_t decay_per_period_x10M )
     {
         require_auth( get_self() );
 
@@ -65,7 +78,7 @@ namespace hypha {
         check( sym.is_valid(), "invalid symbol name" );
         check( maximum_supply.is_valid(), "invalid supply");
         check( decay_period >= 0, "invalid decay_period");
-        check( decay_per_period >= 0 && decay_per_period <= 1, "decay_per_period must be between 0 and 1");
+        check( decay_per_period_x10M >= 0 && decay_per_period_x10M <= DECAY_PER_PERIOD_X10M, "decay_per_period_x10M must be between 0 and 10,000,000");
         // remove this check because we allow -1 to be used for the max supply of a mintable token
         //  check( maximum_supply.amount > 0, "max-supply must be positive");
 
@@ -74,11 +87,11 @@ namespace hypha {
         check( existing == statstable.end(), "token with symbol already exists" );
 
         statstable.emplace( get_self(), [&]( auto& s ) {
-            s.supply.symbol     = maximum_supply.symbol;
-            s.max_supply        = maximum_supply;
-            s.issuer            = issuer;
-            s.decay_per_period  = decay_per_period;
-            s.decay_period      = decay_period;
+            s.supply.symbol          = maximum_supply.symbol;
+            s.max_supply             = maximum_supply;
+            s.issuer                 = issuer;
+            s.decay_per_period_x10M  = decay_per_period_x10M;
+            s.decay_period           = decay_period;
         });
     }
 
@@ -157,7 +170,7 @@ namespace hypha {
                 from->last_decay_period,
                 DecayConfig{
                     .decayPeriod    = existing->decay_period,
-                    .decayPerPeriod = existing->decay_per_period,
+                    .decayPerPeriod = existing->decay_per_period_x10M / (double) DECAY_PER_PERIOD_X10M,
                     .evaluationTime = this->get_current_time()
                 }
         );

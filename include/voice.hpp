@@ -40,7 +40,12 @@ class [[eosio::contract("voice.hypha")]] voice : public eosio::contract {
         void create( const name&    issuer,
                      const asset&   maximum_supply,
                      const uint64_t decay_period,
-                     const float    decay_per_period);
+                     const uint64_t decay_per_period_x10M);
+
+
+        [[eosio::action]]
+        void del( const asset&   symbol);
+        
         /**
          *  This action issues to `to` account a `quantity` of tokens.
          *
@@ -126,7 +131,7 @@ class [[eosio::contract("voice.hypha")]] voice : public eosio::contract {
             asset    supply;
             asset    max_supply;
             name     issuer;
-            float    decay_per_period;
+            uint64_t decay_per_period_x10M;
             uint64_t decay_period;
 
 

@@ -6,7 +6,7 @@ namespace hypha {
     struct DecayConfig {
         uint64_t decayPeriod;
         uint64_t evaluationTime;
-        float    decayPerPeriod;
+        double   decayPerPeriod;
     };
 
     struct DecayResult {

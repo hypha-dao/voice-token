@@ -11,8 +11,8 @@ namespace hypha {
         if (config.decayPerPeriod == 0 || config.decayPeriod == 0 || lastPeriod > config.evaluationTime) {
             return DecayResult{
                     .needsUpdate = false,
-                    .newPeriod   = lastPeriod,
-                    .newBalance  = currentBalance
+                    .newBalance  = currentBalance,
+                    .newPeriod   = lastPeriod
             };
         }
 
@@ -21,15 +21,15 @@ namespace hypha {
         if (periods >= 1) {
             return DecayResult{
                     .needsUpdate = true,
-                    .newPeriod   = lastPeriod + periods * config.decayPeriod,
-                    .newBalance  = (uint64_t) round(currentBalance * pow(1.0f - config.decayPerPeriod, periods))
+                    .newBalance  = (uint64_t) round(currentBalance * pow(1.0f - config.decayPerPeriod, periods)),
+                    .newPeriod   = lastPeriod + periods * config.decayPeriod
             };
         }
 
         return DecayResult{
                 .needsUpdate = false,
-                .newPeriod   = lastPeriod,
-                .newBalance  = currentBalance
+                .newBalance  = currentBalance,
+                .newPeriod   = lastPeriod
         };
     }
 }
