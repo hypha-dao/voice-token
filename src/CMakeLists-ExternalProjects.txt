@@ -1,24 +1,12 @@
-include(ExternalProject)
+include(FetchContent)
 
-set(DOCUMENT_GRAPH_SOURCE "${CMAKE_SOURCE_DIR}/deps/document-graph/src")
-
-ExternalProject_Add(
+FetchContent_Declare(
   document-graph
-  GIT_REPOSITORY "https://github.com/hypha-dao/document-graph.git"
-  GIT_TAG "5d6f03e1903bdb727e3a1a8ed2790fee7e251de7"
-
-  SOURCE_DIR "${CMAKE_SOURCE_DIR}/deps/document-graph"
-  BUILD_COMMAND ""
-  UPDATE_COMMAND ""
-  PATCH_COMMAND ""
-  TEST_COMMAND ""
-  INSTALL_COMMAND ""
-  BUILD_ALWAYS 1
-  BUILD_BYPRODUCTS ${DOCUMENT_GRAPH_SOURCE}/document_graph/edge.cpp ${DOCUMENT_GRAPH_SOURCE}/document_graph/document.cpp ${DOCUMENT_GRAPH_SOURCE}/document_graph/content.cpp ${DOCUMENT_GRAPH_SOURCE}/document_graph/content_wrapper.cpp ${DOCUMENT_GRAPH_SOURCE}/document_graph/content.cpp ${DOCUMENT_GRAPH_SOURCE}/document_graph/util.cpp
+  GIT_REPOSITORY https://github.com/hypha-dao/document-graph.git
+  GIT_TAG        5d6f03e1903bdb727e3a1a8ed2790fee7e251de7
 )
 
-set(PARENT_PROJECT_BINARY_DIR ${PROJECT_BINARY_DIR})
-ExternalProject_Get_Property(document-graph BINARY_DIR)
+FetchContent_Populate(document-graph)
 
-set(document_graph_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/deps/document-graph/include")
-include_directories(${document_graph_INCLUDE_DIRS})
+set(DOCUMENT_GRAPH_SOURCE "${document-graph_SOURCE_DIR}/src")
+set(DOCUMENT_GRAPH_INCLUDE "${document-graph_SOURCE_DIR}/include")

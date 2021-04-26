@@ -15,4 +15,5 @@ add_contract( voice.hypha voice
 )
 
 target_include_directories( voice PUBLIC ${CMAKE_SOURCE_DIR}/../include )
+target_include_directories( voice PUBLIC ${DOCUMENT_GRAPH_INCLUDE}/../include )
 # target_ricardian_directory( voice ${CMAKE_SOURCE_DIR}/../ricardian )
