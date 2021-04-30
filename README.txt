@@ -1,4 +1,6 @@
---- token Project ---
+--- Voice token Project ---
+
+![Status](https://github.com/hypha-dao/voice-token/actions/workflows/build.yml/badge.svg?branch=master)
 
  - How to Build -
    - cd to 'build' directory
