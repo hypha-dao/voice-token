@@ -153,7 +153,7 @@ namespace hypha {
         add_balance( to, quantity, payer );
     }
 
-    void voice::decay(const name& owner, symbol symbol) {
+    asset voice::decay(const name& owner, symbol symbol) {
         stats statstable( get_self(), symbol.code().raw() );
         auto existing = statstable.find( symbol.code().raw() );
         check( existing != statstable.end(), "token with symbol does not exist, create token before issue" );
@@ -162,7 +162,7 @@ namespace hypha {
         const auto from = from_acnts.find( symbol.code().raw());
         if (from == from_acnts.end()) {
             // No balance exists yet, nothing to do
-            return;
+            return asset(0, symbol);
         }
 
         const DecayResult result = hypha::decay(
@@ -184,6 +184,12 @@ namespace hypha {
                 a.last_decay_period = result.newPeriod;
             });
         }
+
+        return asset(result.newBalance, symbol);
+    }
+
+    asset voice::getvoice(const name& owner, const symbol symbol) {
+        return decay(owner, symbol);
     }
 
     void voice::sub_balance( const name& owner, const asset& value ) {

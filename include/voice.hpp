@@ -73,7 +73,12 @@ class [[eosio::contract("voice.hypha")]] voice : public eosio::contract {
 
 
         // Runs decaying actions
-        ACTION decay(const name& owner, symbol symbol);
+        [[eosio::action]]
+        asset decay(const name& owner, symbol symbol);
+
+        // Alias to decay
+        [[eosio::action]]
+        asset getvoice(const name& owner, const symbol symbol);
 
         /**
          * Allows `ram_payer` to create an account `owner` with zero balance for
