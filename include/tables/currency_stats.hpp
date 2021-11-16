@@ -6,7 +6,7 @@ namespace hypha {
     using eosio::name;
     using eosio::symbol_code;
 
-    struct [[eosio::table]] currency_stats {
+    struct [[eosio::table("stat"), eosio::contract("voice.hypha")]] currency_stats {
         uint64_t id;
         name     tenant;
         asset    supply;
@@ -16,7 +16,7 @@ namespace hypha {
         uint64_t decay_period;
 
         static uint128_t build_key(const name& tenant, const symbol_code& currency) {
-            return ((uint128_t)tenant.value << 64) & currency.raw();
+            return ((uint128_t)tenant.value << 64) | currency.raw();
         }
 
         uint64_t primary_key() const {
@@ -28,10 +28,9 @@ namespace hypha {
         }
     };
 
-    typedef eosio::multi_index< "stat"_n, currency_stats > stats;
-    using stats_by_key = eosio::multi_index<
-            "stat"_n,
-            currency_stats,
-            eosio::indexed_by<"bykey"_n, eosio::const_mem_fun<currency_stats, uint128_t, &currency_stats::by_tenant_and_code>>
-        >;
+    using stats_by_key = eosio::indexed_by<
+        "bykey"_n,
+        eosio::const_mem_fun<currency_stats, uint128_t, &currency_stats::by_tenant_and_code>
+    >;
+    using stats = eosio::multi_index<name("stat"), currency_stats, stats_by_key>;
 }

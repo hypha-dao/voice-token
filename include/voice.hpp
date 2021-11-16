@@ -104,15 +104,17 @@ class [[eosio::contract("voice.hypha")]] voice : public eosio::contract {
 
         static asset get_supply(const name& tenant, const name& token_contract_account, const symbol_code& sym_code )
         {
-            stats_by_key statstable( token_contract_account, sym_code.raw() );
-            const auto& st = statstable.get( currency_stats::build_key(tenant, sym_code));
+            stats statstable( token_contract_account, sym_code.raw() );
+            auto index = statstable.get_index<name("bykey")>();
+            const auto& st = index.get( currency_stats::build_key(tenant, sym_code));
             return st.supply;
         }
 
         static asset get_balance(const name& tenant, const name& token_contract_account, const name& owner, const symbol_code& sym_code )
         {
-            accounts_by_key accountstable( token_contract_account, owner.value );
-            const auto& ac = accountstable.get( account::build_key(tenant, sym_code));
+            accounts accountstable( token_contract_account, owner.value );
+            auto index = accountstable.get_index<name("bykey")>();
+            const auto& ac = index.get( account::build_key(tenant, sym_code));
             return ac.balance;
         }
 

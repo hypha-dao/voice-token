@@ -14,10 +14,11 @@ namespace hypha {
         require_auth( get_self() );
         auto sym = symbol.symbol;
         check( sym.is_valid(), "invalid symbol name" );
-        stats_by_key statstable( get_self(), sym.code().raw() );
-        auto existing = statstable.find( currency_stats::build_key(tenant, sym.code()));
-        check( existing != statstable.end(), "token with symbol does not exists" );
-        statstable.erase(existing);
+        stats statstable( get_self(), sym.code().raw() );
+        auto index = statstable.get_index<name("bykey")>();
+        auto existing = index.find( currency_stats::build_key(tenant, sym.code()));
+        check( existing != index.end(), "token with symbol does not exists" );
+        index.erase(existing);
     }
 
     void voice::create( const name&    tenant,
@@ -36,9 +37,11 @@ namespace hypha {
         // remove this check because we allow -1 to be used for the max supply of a mintable token
         //  check( maximum_supply.amount > 0, "max-supply must be positive");
 
-        stats_by_key statstable( get_self(), sym.code().raw() );
-        auto existing = statstable.find( currency_stats::build_key(tenant, sym.code()) );
-        check( existing == statstable.end(), "token with symbol already exists" );
+        stats statstable( get_self(), sym.code().raw() );
+        auto index = statstable.get_index<name("bykey")>();
+
+        auto existing = index.find( currency_stats::build_key(tenant, sym.code()) );
+        check( existing == index.end(), "token with symbol and tenant already exists" );
 
         statstable.emplace( get_self(), [&]( auto& s ) {
             s.id                     = statstable.available_primary_key();
@@ -58,9 +61,10 @@ namespace hypha {
         check( sym.is_valid(), "invalid symbol name" );
         check( memo.size() <= 256, "memo has more than 256 bytes" );
 
-        stats_by_key statstable( get_self(), sym.code().raw() );
-        auto existing = statstable.find( currency_stats::build_key(tenant, sym.code()) );
-        check( existing != statstable.end(), "token with symbol does not exist, create token before issue" );
+        stats statstable( get_self(), sym.code().raw() );
+        auto index = statstable.get_index<name("bykey")>();
+        auto existing = index.find( currency_stats::build_key(tenant, sym.code()) );
+        check( existing != index.end(), "token with symbol does not exist, create token before issue" );
         const auto& st = *existing;
         check( to == st.issuer, "tokens can only be issued to issuer account" );
 
@@ -92,8 +96,9 @@ namespace hypha {
         require_auth( from );
         check( is_account( to ), "to account does not exist");
         auto sym = quantity.symbol.code();
-        stats_by_key statstable( get_self(), sym.raw() );
-        const auto& st = statstable.get( currency_stats::build_key(tenant, sym) );
+        stats statstable( get_self(), sym.raw() );
+        auto index = statstable.get_index<name("bykey")>();
+        const auto& st = index.get( currency_stats::build_key(tenant, sym) );
 
         check( from == st.issuer, "tokens can only be transferred by issuer account" );
         require_recipient( from );
@@ -111,13 +116,15 @@ namespace hypha {
     }
 
     void voice::decay(const name& tenant, const name& owner, symbol symbol) {
-        stats_by_key statstable( get_self(), symbol.code().raw() );
-        auto existing = statstable.find( currency_stats::build_key(tenant, symbol.code()) );
-        check( existing != statstable.end(), "token with symbol does not exist, create token before issue" );
+        stats statstable( get_self(), symbol.code().raw() );
+        auto index = statstable.get_index<name("bykey")>();
+        auto existing = index.find( currency_stats::build_key(tenant, symbol.code()) );
+        check( existing != index.end(), "token with symbol does not exist, create token before issue" );
 
-        accounts_by_key from_acnts(get_self(), owner.value);
-        const auto from = from_acnts.find( account::build_key(tenant, symbol.code()) );
-        if (from == from_acnts.end()) {
+        accounts from_acnts(get_self(), owner.value);
+        auto account_index = from_acnts.get_index<name("bykey")>();
+        const auto from = account_index.find( account::build_key(tenant, symbol.code()) );
+        if (from == account_index.end()) {
             // No balance exists yet, nothing to do
             return;
         }
@@ -136,7 +143,7 @@ namespace hypha {
             eosio::asset updated_issued = from->balance;
             updated_issued.amount = result.newBalance - updated_issued.amount;
             update_issued(tenant, updated_issued);
-            from_acnts.modify( from, get_self(), [&]( auto& a ) {
+            account_index.modify( from, get_self(), [&]( auto& a ) {
                 a.balance.amount = result.newBalance;
                 a.last_decay_period = result.newPeriod;
             });
@@ -145,9 +152,10 @@ namespace hypha {
 
     void voice::sub_balance(const name& tenant, const name& owner, const asset& value ) {
         this->decay(tenant, owner, value.symbol);
-        accounts_by_key from_acnts( get_self(), owner.value );
+        accounts from_acnts( get_self(), owner.value );
+        auto index = from_acnts.get_index<name("bykey")>();
 
-        const auto& from = from_acnts.get( account::build_key(tenant, value.symbol.code()), "no balance object found" );
+        const auto& from = index.get( account::build_key(tenant, value.symbol.code()), "no balance object found" );
         check( from.balance.amount >= value.amount, "overdrawn balance" );
 
         from_acnts.modify( from, owner, [&]( auto& a ) {
@@ -158,15 +166,17 @@ namespace hypha {
     void voice::add_balance(const name& tenant, const name& owner, const asset& value, const name& ram_payer )
     {
         this->decay(tenant, owner, value.symbol);
-        accounts_by_key to_acnts( get_self(), owner.value );
-        auto to = to_acnts.find( account::build_key(tenant, value.symbol.code()) );
-        if( to == to_acnts.end() ) {
+        accounts to_acnts( get_self(), owner.value );
+        auto index = to_acnts.get_index<name("bykey")>();
+        auto to = index.find( account::build_key(tenant, value.symbol.code()) );
+        if( to == index.end() ) {
             to_acnts.emplace( ram_payer, [&]( auto& a ){
                 a.balance = value;
+                a.tenant = tenant;
                 a.last_decay_period = this->get_current_time();
             });
         } else {
-            to_acnts.modify( to, same_payer, [&]( auto& a ) {
+            index.modify( to, same_payer, [&]( auto& a ) {
                 a.balance += value;
             });
         }
@@ -177,9 +187,10 @@ namespace hypha {
         auto sym = quantity.symbol;
         check( sym.is_valid(), "invalid symbol name" );
 
-        stats_by_key statstable( get_self(), sym.code().raw() );
-        auto existing = statstable.find(currency_stats::build_key(tenant, sym.code()));
-        check( existing != statstable.end(), "token with symbol does not exist" );
+        stats statstable( get_self(), sym.code().raw() );
+        auto index = statstable.get_index<name("bykey")>();
+        auto existing = index.find(currency_stats::build_key(tenant, sym.code()));
+        check( existing != index.end(), "token with symbol does not exist" );
         const auto& st = *existing;
 
         check( quantity.is_valid(), "invalid quantity" );
@@ -196,15 +207,18 @@ namespace hypha {
 
         check( is_account( owner ), "owner account does not exist" );
 
-        stats_by_key statstable( get_self(), symbol.code().raw() );
-        const auto& st = statstable.get( currency_stats::build_key(tenant, symbol.code()), "symbol does not exist" );
+        stats statstable( get_self(), symbol.code().raw() );
+        auto index = statstable.get_index<name("bykey")>();
+        const auto& st = index.get( currency_stats::build_key(tenant, symbol.code()), "symbol does not exist" );
         check( st.supply.symbol == symbol, "symbol precision mismatch" );
 
-        accounts_by_key acnts( get_self(), owner.value );
-        auto it = acnts.find( account::build_key(tenant, symbol.code()) );
-        if( it == acnts.end() ) {
+        accounts acnts( get_self(), owner.value );
+        auto account_index = acnts.get_index<name("bykey")>();
+        auto it = account_index.find( account::build_key(tenant, symbol.code()) );
+        if( it == account_index.end() ) {
             acnts.emplace( ram_payer, [&]( auto& a ){
                 a.id = acnts.available_primary_key();
+                a.tenant = tenant;
                 a.balance = asset{0, symbol};
                 a.last_decay_period = this->get_current_time();
             });
@@ -214,11 +228,12 @@ namespace hypha {
     void voice::close(const name& tenant, const name& owner, const symbol& symbol )
     {
         require_auth( owner );
-        accounts_by_key acnts( get_self(), owner.value );
-        auto it = acnts.find( account::build_key(tenant, symbol.code()) );
-        check( it != acnts.end(), "Balance row already deleted or never existed. Action won't have any effect." );
+        accounts acnts( get_self(), owner.value );
+        auto index = acnts.get_index<name("bykey")>();
+        auto it = index.find( account::build_key(tenant, symbol.code()) );
+        check( it != index.end(), "Balance row already deleted or never existed. Action won't have any effect." );
         check( it->balance.amount == 0, "Cannot close because the balance is not zero." );
-        acnts.erase( it );
+        index.erase( it );
     }
 
     uint64_t voice::get_current_time() {
