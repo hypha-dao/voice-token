@@ -171,6 +171,7 @@ namespace hypha {
         auto to = index.find( account::build_key(tenant, value.symbol.code()) );
         if( to == index.end() ) {
             to_acnts.emplace( ram_payer, [&]( auto& a ){
+                a.id = to_acnts.available_primary_key();
                 a.balance = value;
                 a.tenant = tenant;
                 a.last_decay_period = this->get_current_time();
