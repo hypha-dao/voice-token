@@ -54,29 +54,46 @@ await deleteIfExists(artifacts+"/"+contract+".abi")
 // copy document-graph submodule to the project's paths
 const docGraphInclude = dir + 'include/document_graph'
 const docGraphSrc = dir + 'src/document_graph'
+const loggerInclude = dir + 'include/logger'
+const loggerSrc = dir + 'src/logger'
 
 const docGraphIncludeFound = await existsAsync(docGraphInclude)
 const docGraphSrcFound = await existsAsync(docGraphSrc)
 
-if (!docGraphIncludeFound) {
-  fse.copySync(dir + 'document-graph/include/document_graph', docGraphInclude, { overwrite: true }, (err) => {
-    if (err) {
-      throw new Error(''+err)
-    } else {
-      console.log("document graph submodule include prepared")
-    }
-  })
-}
+fse.copySync(dir + 'document-graph/include/document_graph', docGraphInclude, { overwrite: true }, (err) => {
+  if (err) {
+    throw new Error(''+err)
+  } else {
+    console.log("document graph submodule include prepared")
+  }
+})
 
-if (!docGraphSrcFound) {
-  fse.copySync(dir + 'document-graph/src/document_graph', docGraphSrc, { overwrite: true }, (err) => {
-    if (err) {
-      throw new Error(''+err)
-    } else {
-      console.log("document graph submodule src prepared")
-    }
-  })
-}
+
+fse.copySync(dir + 'document-graph/src/document_graph', docGraphSrc, { overwrite: true }, (err) => {
+  if (err) {
+    throw new Error(''+err)
+  } else {
+    console.log("document graph submodule src prepared")
+  }
+})
+
+fse.copySync(dir + 'document-graph/include/logger', loggerInclude, { overwrite: true }, (err) => {
+  if (err) {
+    throw new Error(''+err)
+  } else {
+    console.log("logger submodule include prepared")
+  }
+})
+
+
+fse.copySync(dir + 'document-graph/src/logger', loggerSrc, { overwrite: true }, (err) => {
+  if (err) {
+    throw new Error(''+err)
+  } else {
+    console.log("logger submodule src prepared")
+  }
+})
+
 
 // run compile
 const execCommand = command({ contract, source, include, dir })
