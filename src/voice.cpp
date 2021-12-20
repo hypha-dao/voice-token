@@ -311,5 +311,3 @@ namespace hypha {
 
     }
 }
-
-EOSIO_DISPATCH( hypha::voice, (create)(issue)(open)(close)(voicereset) )
