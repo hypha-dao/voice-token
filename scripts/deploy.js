@@ -391,81 +391,6 @@ const changeExistingKeyPermission = async (account, role, parentRole = 'active',
   }
 }
 
-const createCoins = async (token) => {
-  const { account, issuer, supply } = token
-
-  try {
-    await eos.transaction({
-      actions: [
-        {
-          account,
-          name: 'create',
-          authorization: [{
-            actor: account,
-            permission: 'active'
-          }],
-          data: {
-            issuer,
-            initial_supply: supply
-          }
-        }
-      ]
-    })
-  
-    await eos.transaction({
-      actions: [
-        {
-          account,
-          name: 'issue',
-          authorization: [{
-            actor: issuer,
-            permission: 'active'
-          }],
-          data: {
-            to: issuer,
-            quantity: supply,
-            memo: ''
-          }
-        }
-      ]
-    })
-    console.log(`coins successfully minted at ${account} with max supply of ${supply}`)
-  } catch (err) {
-    console.error(`coins already created at ${account}\n* error: ` + err + "\n")
-  }
-}
-
-const transferCoins = async (token, recipient) => {
-  try {
-
-    await eos.transaction({
-      actions: [
-        {
-          account: token.account,
-          name: 'transfer',
-          authorization: [{
-            actor: token.issuer,
-            permission: 'active'
-          }],
-          data: {
-            from: token.issuer,
-            to: recipient.account,
-            quantity: recipient.quantity,
-            memo: ''
-          }
-        }
-      ]
-    })
-    
-    console.log(`sent ${recipient.quantity} from ${token.issuer} to ${recipient.account}`)
-
-    console.log("remaining balance for "+token.issuer +" "+ JSON.stringify(await getBalance(token.issuer), null, 2))
-
-  } catch (err) {
-    console.error(`cannot transfer from ${token.issuer} to ${recipient.account} (${recipient.quantity})\n* error: ` + err + `\n`)
-  }
-}
-
 const reset = async ({ account }) => {
 
   if (!isLocal()) {
@@ -558,51 +483,8 @@ const updatePermissions = async () => {
   }  
 }
 
-const deployAllContracts = async () => {
-  const ownerExists = await isExistingAccount(accounts.owner.account)
-
-  if (!ownerExists) {
-    console.log(`owner ${accounts.owner.account} should exist before deployment`)
-    return
-  }
-
-  await createAccount(accounts.token)
-  await deploy(accounts.token)
-  await createCoins(accounts.token)
-
-  if (accounts.testtoken) {
-    await createCoins(accounts.testtoken)
-  }
-
-  const accountNames = Object.keys(accounts)
-  for (let current = 0; current < accountNames.length; current++) {
-    const accountName = accountNames[current]
-    const account = accounts[accountName]
-
-    await createAccount(account)
-
-    if (account.type === 'contract') {
-      await deploy(account)
-    }
-
-    if (account.quantity && Number.parseFloat(account.quantity) > 0) {
-      await transferCoins(accounts.token, account)
-    }
-
-    await sleep(1000)
-  }
-
-  if (isLocal()) {
-    await addActorPermission("cg.seeds", "active", "seedsuseraaa", "active")
-    await addActorPermission("cg.seeds", "active", "seedsuserbbb", "active")
-  }
-  
-  await updatePermissions()
-  await reset(accounts.settings)
-}
-
 module.exports = { 
-  source, deployAllContracts, updatePermissions, 
+  source, updatePermissions, 
   resetByName, changeOwnerAndActivePermission, 
   changeExistingKeyPermission, addActorPermission,
   removeAllActorPermissions
