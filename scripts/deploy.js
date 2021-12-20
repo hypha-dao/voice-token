@@ -44,7 +44,6 @@ const source = async (name) => {
 }
 
 const createAccount = async ({ account, publicKey, stakes, creator } = {}) => {
-  if (!account) return
 
   try {
 
@@ -483,8 +482,44 @@ const updatePermissions = async () => {
   }  
 }
 
+const deployAllContracts = async () => {
+  const ownerExists = await isExistingAccount(accounts.owner.account)
+
+  if (!ownerExists) {
+    await createAccount(accounts.owner)
+    return
+  }
+
+  const accountNames = Object.keys(accounts)
+  for (let current = 0; current < accountNames.length; current++) {
+    const accountName = accountNames[current]
+    const account = accounts[accountName]
+
+    await createAccount(account)
+
+    if (account.type === 'contract') {
+      await deploy(account)
+    }
+
+    if (account.quantity && Number.parseFloat(account.quantity) > 0) {
+      await transferCoins(accounts.token, account)
+    }
+
+    await sleep(1000)
+  }
+
+  if (isLocal()) {
+    await addActorPermission("cg.seeds", "active", "seedsuseraaa", "active")
+    await addActorPermission("cg.seeds", "active", "seedsuserbbb", "active")
+  }
+  
+  await updatePermissions()
+  await reset(accounts.settings)
+}
+
+
 module.exports = { 
-  source, updatePermissions, 
+  source, deployAllContracts, updatePermissions, 
   resetByName, changeOwnerAndActivePermission, 
   changeExistingKeyPermission, addActorPermission,
   removeAllActorPermissions

@@ -17,7 +17,7 @@ namespace hypha {
     * eosio.token contract defines the structures and actions that allow users to create, issue, and manage
     * tokens on EOSIO based blockchains.
     */
-class [[eosio::contract("voice.hypha")]] voice : public eosio::contract {
+class [[eosio::contract("voice")]] voice : public eosio::contract {
     public:
         using contract::contract;
 
@@ -78,6 +78,9 @@ class [[eosio::contract("voice.hypha")]] voice : public eosio::contract {
         // Runs decaying actions
         ACTION decay(const name& owner, symbol symbol);
 
+        // One time voice reset
+        ACTION voicereset(const name& owner);
+
         /**
          * Allows `ram_payer` to create an account `owner` with zero balance for
          * token `symbol` at the expense of `ram_payer`.
@@ -123,6 +126,7 @@ class [[eosio::contract("voice.hypha")]] voice : public eosio::contract {
         using issue_action = eosio::action_wrapper<"issue"_n, &voice::issue>;
         using open_action = eosio::action_wrapper<"open"_n, &voice::open>;
         using close_action = eosio::action_wrapper<"close"_n, &voice::close>;
+        using voicereset_action = eosio::action_wrapper<"voicereset"_n, &voice::voicereset>;
     private:
         struct [[eosio::table]] account {
             asset    balance;

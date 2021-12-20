@@ -8,7 +8,7 @@ const { settings, scheduler } = names
 
 const {proposeDeploy, proposeKeyPermissions } = require('./propose_deploy')
 const deploy = require('./deploy.command')
-const { updatePermissions, resetByName, 
+const { deployAllContracts, updatePermissions, resetByName, 
     changeOwnerAndActivePermission, 
     changeExistingKeyPermission, 
     addActorPermission,
@@ -73,6 +73,22 @@ const batchCallFunc = async (contract, moreContracts, func) => {
   }
 }
 
+const initAction = async (compile = true) => {
+
+  if (compile) {
+    for (i=0; i<allContracts.length; i++) {
+      let item = allContracts[i];
+      console.log("compile ... " + item);
+      await compileAction(item);
+    }
+  } else {
+    console.log("no compile")
+  }
+
+  await deployAllContracts()
+
+}
+
 const updatePermissionAction = async () => {
   await updatePermissions()
 }
@@ -80,6 +96,14 @@ const updatePermissionAction = async () => {
 /// 
 /// Commands 
 /// 
+
+program
+  .command('init [compile]')
+  .description('Initial creation of all accounts and contracts contract')
+  .action(async function(compile) {
+    var comp = compile != "false" 
+    await initAction(comp)
+  })
 
 program
   .command('compile <contract> [moreContracts...]')

@@ -93,19 +93,16 @@ const accountsMetadata = (network) => {
     return {
       owner: account(owner),
       voice: contract('voice.hypha', 'voice'),
-      decay: contract('decay.hypha', 'decay'),
     }
   } else if (network == networks.telosMainnet) {
     return {
       owner: account(owner),
       voice: contract('voice.hypha', 'voice'),
-      decay: contract('decay.hypha', 'decay'),
     }
   } else if (network == networks.telosTestnet) {
     return {
       owner: account(owner),
       voice: contract('voice.hypha', 'voice'),
-      decay: contract('decay.hypha', 'decay'),
     }
   } else {
     throw new Error(`${network} deployment not supported`)

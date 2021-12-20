@@ -25,3 +25,4 @@ include/document_graph
 src/document_graph
 include/logger
 src/logger
+artifacts
