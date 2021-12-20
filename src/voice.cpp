@@ -1,9 +1,16 @@
 #include <voice.hpp>
 #include <decay.hpp>
 #include <eosio/system.hpp>
-#include <document_graph/edge.hpp>
-#include <document_graph/document.hpp>
+
 #include <trail.hpp>
+
+#include "document_graph/content.cpp"
+#include "document_graph/document.cpp"
+#include "document_graph/edge.cpp"
+#include "document_graph/util.cpp"
+#include "document_graph/content_wrapper.cpp"
+#include "document_graph/document_graph.cpp"
+#include "decay.cpp"
 
 namespace hypha {
 

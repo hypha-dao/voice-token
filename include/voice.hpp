@@ -5,6 +5,9 @@
 
 #include <string>
 
+#include <document_graph/edge.hpp>
+#include <document_graph/document.hpp>
+
 namespace hypha {
 
     using namespace eosio;
