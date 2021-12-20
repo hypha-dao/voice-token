@@ -227,6 +227,7 @@ namespace hypha {
     }
 
     // debug method, do not deploy in production
+    /*
     void voice::reset(const name& owner) {
 
         require_auth( get_self() );
@@ -254,7 +255,8 @@ namespace hypha {
         });    
     
     }
-
+    /**/
+    
     void voice::sub_balance( const name& owner, const asset& value ) {
         this->decay(owner, value.symbol);
         accounts from_acnts( get_self(), owner.value );
