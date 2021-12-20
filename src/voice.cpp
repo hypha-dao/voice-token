@@ -226,6 +226,7 @@ namespace hypha {
     
     }
 
+    // debug method, do not deploy in production
     void voice::reset(const name& owner) {
 
         require_auth( get_self() );
