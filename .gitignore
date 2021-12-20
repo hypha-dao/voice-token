@@ -21,3 +21,7 @@ telos.sh
 /src/deps
 cmake-build-debug
 /.idea
+include/document_graph
+src/document_graph
+include/logger
+src/logger
