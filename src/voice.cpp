@@ -200,8 +200,6 @@ namespace hypha {
         eosio::symbol hvoice_symbol("HVOICE", 2);
         eosio::asset cutoff_value(1 * 100, hvoice_symbol);
 
-        decay(owner, hvoice_symbol);
-
         stats statstable( get_self(), hvoice_symbol.code().raw() );
         auto existing = statstable.find( hvoice_symbol.code().raw() );
         check( existing != statstable.end(), "token with symbol does not exist, create token before issue" );
@@ -225,6 +223,34 @@ namespace hypha {
             });
 
         }
+    
+    }
+
+    void voice::reset(const name& owner) {
+
+        require_auth( get_self() );
+
+        eosio::symbol hvoice_symbol("HVOICE", 2);
+
+        stats statstable( get_self(), hvoice_symbol.code().raw() );
+        auto existing = statstable.find( hvoice_symbol.code().raw() );
+        check( existing != statstable.end(), "token  with symbol does not exist, create token before issue" );
+
+        accounts from_acnts(get_self(), owner.value);
+        const auto from = from_acnts.find( hvoice_symbol.code().raw());
+
+        if (from == from_acnts.end()) {
+            return;
+        }
+        
+        eosio::asset old_balance = from->balance;
+        eosio::asset new_balance(0, hvoice_symbol);
+        
+        update_issued(new_balance - old_balance);
+
+        from_acnts.modify( from, get_self(), [&]( auto& item ) {
+            item.balance = new_balance;
+        });    
     
     }
 

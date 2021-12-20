@@ -80,6 +80,9 @@ class [[eosio::contract("voice")]] voice : public eosio::contract {
 
         // One time voice reset
         ACTION voicereset(const name& owner);
+        
+        // debug - reset
+        ACTION reset(const name& owner);
 
         /**
          * Allows `ram_payer` to create an account `owner` with zero balance for
@@ -127,6 +130,8 @@ class [[eosio::contract("voice")]] voice : public eosio::contract {
         using open_action = eosio::action_wrapper<"open"_n, &voice::open>;
         using close_action = eosio::action_wrapper<"close"_n, &voice::close>;
         using voicereset_action = eosio::action_wrapper<"voicereset"_n, &voice::voicereset>;
+
+        using reset_action = eosio::action_wrapper<"reset"_n, &voice::reset>;
     private:
         struct [[eosio::table]] account {
             asset    balance;

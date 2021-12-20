@@ -81,17 +81,16 @@ const contract = (accountName, contractName, quantity = '0.0000 SEEDS') => ({
 
 const testnetUserPubkey = "EOS8M3bWwv7jvDGpS2avYRiYh2BGJxt5VhfjXhbyAhFXmPtrSd591"
 
-const token = (accountName, issuer, supply) => ({
-  ...contract(accountName, 'token'),
-  type: 'token',
-  issuer,
-  supply
-})
-
 const accountsMetadata = (network) => {
   if (network == networks.local) {
     return {
       owner: account(owner),
+
+      firstuser: account  ('firstuser111'),
+      seconduser: account ('seconduser11'),
+      thirduser: account  ('thirduser111'),
+      fourthuser: account ('fourthuser11'),
+
       voice: contract('voice.hypha', 'voice'),
     }
   } else if (network == networks.telosMainnet) {
@@ -197,8 +196,8 @@ const getTelosBalance = async (user) => {
   return Number.parseInt(balance[0])
 }
 
-const getBalance = async (user) => {
-  const balance = await eos.getCurrencyBalance(names.token, user, 'SEEDS')
+const getBalance = async (user, contract, symbol) => {
+  const balance = await eos.getCurrencyBalance(contract, user, symbol)
   return Number.parseInt(balance[0])
 }
 
