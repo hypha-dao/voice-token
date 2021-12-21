@@ -3,6 +3,7 @@ const { exec } = require('child_process')
 const { promisify } = require('util')
 const fse = require('fs-extra')
 var fs = require('fs');
+const { join } = require('path');
 var dir = './tmp';
 
 const existsAsync = promisify(fs.exists)
@@ -19,7 +20,8 @@ const command = ({ contract, source, include, dir }) => {
   if (process.env.COMPILER === 'local') {
     cmd = "eosio-cpp -abigen -I "+ inc +" -contract " + contract + " -o ./artifacts/"+contract+".wasm "+source;
   } else {
-    cmd = `docker run --rm --name eosio.cdt_v1.7.0-rc1 --volume ${volume}:/project -w /project eostudio/eosio.cdt:v1.7.0-rc1 /bin/bash -c "echo 'starting';eosio-cpp -abigen -I ${inc} -contract ${contract} -o ./artifacts/${contract}.wasm ${source}"`
+    cmd = `docker run --rm --volume ${volume}:${volume} -w ${volume} eosio/key-value-example:v1.0.0 /bin/bash -c "cd build && cmake .. && make"`
+    // cmd = `docker run --rm --name eosio.cdt_v1.7.0-rc1 --volume ${volume}:/project -w /project eostudio/eosio.cdt:v1.7.0-rc1 /bin/bash -c "echo 'starting';eosio-cpp -abigen -I ${inc} -contract ${contract} -o ./artifacts/${contract}.wasm ${source}"`
   }
   console.log("compiler command: " + cmd);
   return cmd
@@ -47,7 +49,15 @@ if (!artifactsFound){
   await mkdirAsync(artifacts)
 }
 
-// clean build folder
+// make sure build exists
+const build = join(dir, 'build')
+const buildFound = await existsAsync(build)
+if (!buildFound){
+  console.log("creating build directory...")
+  await mkdirAsync(build)
+}
+
+/* // clean build folder
 await deleteIfExists(artifacts+"/"+contract+".wasm")
 await deleteIfExists(artifacts+"/"+contract+".abi")
 
@@ -92,7 +102,7 @@ fse.copySync(dir + 'document-graph/src/logger', loggerSrc, { overwrite: true }, 
   } else {
     console.log("logger submodule src prepared")
   }
-})
+}) */
 
 
 // run compile

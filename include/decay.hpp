@@ -15,7 +15,7 @@ namespace hypha {
         uint64_t newPeriod;
     };
 
-    const DecayResult decay(
+    const DecayResult Decay(
             const uint64_t currentBalance,
             const uint64_t lastPeriod,
             const DecayConfig& config

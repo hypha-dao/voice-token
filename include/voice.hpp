@@ -5,8 +5,10 @@
 
 #include <string>
 
-#include <document_graph/edge.hpp>
-#include <document_graph/document.hpp>
+#include <decay.hpp>
+
+#include <document_graph/document_graph.hpp>
+#include <document_graph/content_wrapper.hpp>
 
 namespace hypha {
 

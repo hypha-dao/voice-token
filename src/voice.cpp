@@ -4,13 +4,6 @@
 
 #include <trail.hpp>
 
-#include "document_graph/content.cpp"
-#include "document_graph/document.cpp"
-#include "document_graph/edge.cpp"
-#include "document_graph/util.cpp"
-#include "document_graph/content_wrapper.cpp"
-#include "document_graph/document_graph.cpp"
-#include "decay.cpp"
 
 namespace hypha {
 
@@ -172,7 +165,7 @@ namespace hypha {
             return;
         }
 
-        const DecayResult result = hypha::decay(
+        const DecayResult result = hypha::Decay(
                 from->balance.amount,
                 from->last_decay_period,
                 DecayConfig{
