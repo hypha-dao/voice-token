@@ -5,7 +5,7 @@
 constexpr uint64_t ONE_DAY_SECONDS = 60 * 60 * 24;
 
 void test_decay_one_period() {
-    auto result = hypha::Decay(100, 0, hypha::DecayConfig{
+    auto result = hypha::decay(100, 0, hypha::DecayConfig{
             .decayPeriod    = 10,
             .evaluationTime = 10, // exactly 1 period
             .decayPerPeriod = 0.1
@@ -17,7 +17,7 @@ void test_decay_one_period() {
 }
 
 void test_decay_one_period_not_exact() {
-    auto result = hypha::Decay(100, 0, hypha::DecayConfig{
+    auto result = hypha::decay(100, 0, hypha::DecayConfig{
             .decayPeriod    = 10,
             .evaluationTime = 15, // 5s past 1 period
             .decayPerPeriod = 0.1
@@ -29,7 +29,7 @@ void test_decay_one_period_not_exact() {
 }
 
 void test_decay_two_periods() {
-    auto result = hypha::Decay(100, 0, hypha::DecayConfig{
+    auto result = hypha::decay(100, 0, hypha::DecayConfig{
             .decayPeriod    = 10,
             .evaluationTime = 20, // exactly 2 periods
             .decayPerPeriod = 0.1
@@ -41,7 +41,7 @@ void test_decay_two_periods() {
 }
 
 void test_no_decay() {
-    auto result = hypha::Decay(100, 0, hypha::DecayConfig{
+    auto result = hypha::decay(100, 0, hypha::DecayConfig{
             .decayPeriod    = 10,
             .evaluationTime = 9, // almost 1 period
             .decayPerPeriod = 0.5
@@ -53,7 +53,7 @@ void test_no_decay() {
 }
 
 void test_decay_two_periods_50p() {
-    auto result = hypha::Decay(100, 0, hypha::DecayConfig{
+    auto result = hypha::decay(100, 0, hypha::DecayConfig{
             .decayPeriod    = 10,
             .evaluationTime = 29,
             .decayPerPeriod = 0.5
@@ -65,7 +65,7 @@ void test_decay_two_periods_50p() {
 }
 
 void test_decay_one_after_other() {
-    auto result = hypha::Decay(100, 50, hypha::DecayConfig{
+    auto result = hypha::decay(100, 50, hypha::DecayConfig{
             .decayPeriod    = 10,
             .evaluationTime = 65,
             .decayPerPeriod = 0.1
@@ -77,7 +77,7 @@ void test_decay_one_after_other() {
 }
 
 void test_decay_period_evaluated_in_the_past() {
-    auto result = hypha::Decay(100, 50, hypha::DecayConfig{
+    auto result = hypha::decay(100, 50, hypha::DecayConfig{
             .decayPeriod    = 10,
             .evaluationTime = 40,
             .decayPerPeriod = 0.1
@@ -97,7 +97,7 @@ void test_decay_multiple_decays() {
     for (std::size_t i = 0; i < 10; ++i) {
         balance += daily_quantity;
 
-        auto result = hypha::Decay(balance, time, hypha::DecayConfig{
+        auto result = hypha::decay(balance, time, hypha::DecayConfig{
                 .decayPeriod    = ONE_DAY_SECONDS,
                 .evaluationTime = ONE_DAY_SECONDS * (i + 1),
                 .decayPerPeriod = 0.02 // 2%

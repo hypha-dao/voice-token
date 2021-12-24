@@ -165,7 +165,7 @@ namespace hypha {
             return;
         }
 
-        const DecayResult result = hypha::Decay(
+        const DecayResult result = hypha::decay(
                 from->balance.amount,
                 from->last_decay_period,
                 DecayConfig{
