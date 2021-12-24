@@ -26,4 +26,3 @@ src/document_graph
 include/logger
 src/logger
 artifacts
-.env
