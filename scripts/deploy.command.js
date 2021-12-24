@@ -42,8 +42,8 @@ const deploy = async (name) => {
 }
 
 const source = async (name) => {
-  const codePath = path.join(__dirname, '../artifacts', name.concat('.wasm'))
-  const abiPath = path.join(__dirname, '../artifacts', name.concat('.abi'))
+  const codePath = path.join(__dirname, '../build/'+name, name.concat('.wasm'))
+  const abiPath = path.join(__dirname, '../build/'+name, name.concat('.abi'))
 
   const code = new Promise(resolve => {
     fs.readFile(codePath, (_, r) => resolve(r))

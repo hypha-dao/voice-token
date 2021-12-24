@@ -172,11 +172,15 @@ const eos = new Eos(config, isLocal)
 // const eosNoNonce = new Eos(config, false)
 
 setTimeout(async () => {
-  let info = await eos.getInfo({})
-  if (info.chain_id != chainId) {
-    console.error("Fix this by setting local chain ID to " + info.chain_id)
-    console.error('Chain ID mismatch, signing will not work - \nactual Chain ID: "+info.chain_id + "\nexpected Chain ID: "+chainId')
-    throw new Error("Chain ID mismatch")
+  try {
+    let info = await eos.getInfo({})
+    if (info.chain_id != chainId) {
+      console.error("Fix this by setting local chain ID to " + info.chain_id)
+      console.error('Chain ID mismatch, signing will not work - \nactual Chain ID: "+info.chain_id + "\nexpected Chain ID: "+chainId')
+      throw new Error("Chain ID mismatch")
+    }  
+  } catch {
+    console.log("no chain found.")
   }
 })
 
