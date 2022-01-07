@@ -1,0 +1,6 @@
+contracts:
+  voice:
+    abi: build/voice/voice.abi
+    name: voice
+    wasm: build/voice/voice.wasm
+options: null

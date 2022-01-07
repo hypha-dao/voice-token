@@ -1,0 +1,21 @@
+{
+  "name": "voice",
+  "version": "1.0.0",
+  "description": "Testing voice smart contract with Hydra",
+  "main": "",
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "@klevoya/hydra": "*",
+    "jest": "27.3.1",
+    "ts-jest": "27.0.7",
+    "typescript": "4.4.4"
+  },
+  "devDependencies": {
+    "@types/jest": "27.0.2"
+  },
+  "keywords": [],
+  "author": "",
+  "license": ""
+}
