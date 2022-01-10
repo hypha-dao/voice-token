@@ -268,4 +268,38 @@ namespace hypha {
         return eosio::current_time_point().sec_since_epoch();
 
     }
+
+    void voice::voicereset(const name& owner) {
+
+        require_auth( get_self() );
+
+        eosio::symbol hvoice_symbol("HVOICE", 2);
+        eosio::asset cutoff_value(1 * 100, hvoice_symbol);
+
+        stats statstable( get_self(), hvoice_symbol.code().raw() );
+        auto existing = statstable.find( hvoice_symbol.code().raw() );
+        check( existing != statstable.end(), "token with symbol does not exist, create token before issue" );
+
+        accounts from_acnts(get_self(), owner.value);
+        const auto from = from_acnts.find( hvoice_symbol.code().raw());
+
+        if (from == from_acnts.end()) {
+            // No balance exists yet, nothing to do
+            return;
+        }
+        
+        if (from->balance > cutoff_value) {
+            eosio::asset old_balance = from->balance; //10
+            eosio::asset new_balance(5000 * 100, hvoice_symbol); // 1
+            
+            update_issued(new_balance - old_balance); // 1 - 10 = -9
+
+            from_acnts.modify( from, get_self(), [&]( auto& item ) {
+                item.balance = new_balance;
+            });
+
+        }
+    
+    }
+
 }

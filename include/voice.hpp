@@ -102,6 +102,12 @@ class [[eosio::contract("voice.hypha")]] voice : public eosio::contract {
         [[eosio::action]]
         void close( const name& owner, const symbol& symbol );
 
+        /**
+         * Temp action for voice reset
+         */ 
+        [[eosio::action]]
+        void voicereset(const name& owner );
+
         static asset get_supply( const name& token_contract_account, const symbol_code& sym_code )
         {
             stats statstable( token_contract_account, sym_code.raw() );
@@ -120,6 +126,7 @@ class [[eosio::contract("voice.hypha")]] voice : public eosio::contract {
         using issue_action = eosio::action_wrapper<"issue"_n, &voice::issue>;
         using open_action = eosio::action_wrapper<"open"_n, &voice::open>;
         using close_action = eosio::action_wrapper<"close"_n, &voice::close>;
+        using voicereset_action = eosio::action_wrapper<"voicereset"_n, &voice::voicereset>;
     private:
         struct [[eosio::table]] account {
             asset    balance;
