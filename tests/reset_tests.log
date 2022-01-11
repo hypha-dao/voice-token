@@ -1,0 +1,293 @@
+testing voice reset with 3 accounts - pass
+
+
+~/play/hypha/voice-token feature/v1_voice_reset* 8s
+❯ cleos push action voice.hypha create '{ 
+        "issuer":"owner",
+        "maximum_supply":"10000000.00 HVOICE",
+        "decay_period": 1000,
+        "decay_per_period_x10M": 10000000
+}' -p voice.hypha@active
+
+executed transaction: beae15c0aa70d0ce36a3ecb2b43454580796a44d91e896023378896485bb3992  136 bytes  2223 us
+#   voice.hypha <= voice.hypha::create          {"issuer":"owner","maximum_supply":"10000000.00 HVOICE","decay_period":1000,"decay_per_period_x10M":...
+warning: transaction executed locally, but may not be confirmed by the network yet         ] 
+
+~/play/hypha/voice-token feature/v1_voice_reset*
+❯ cleos push action voice.hypha issue '{ 
+        "to":"owner",
+        "quantity":"10000.00 HVOICE",
+        "memo":""
+}' -p owner@active
+
+executed transaction: 4a11b769a556a2839d6d8631e3e7624f8a11f16d7dd2607f0e20dc4a15e04376  120 bytes  1617 us
+#   voice.hypha <= voice.hypha::issue           {"to":"owner","quantity":"10000.00 HVOICE","memo":""}
+warning: transaction executed locally, but may not be confirmed by the network yet         ] 
+
+~/play/hypha/voice-token feature/v1_voice_reset*
+❯ cleost push action voice.hypha transfer '{ 
+        "from":"owner",
+        "to":"seedsuseraaa",
+        "quantity":"1.00 HVOICE",
+        "memo":""
+}' -p voice.hypha@active
+
+Error 3090003: Provided keys, permissions, and delays do not satisfy declared authorizations
+Ensure that you have the related private keys inside your wallet and your wallet is unlocked.
+Error Details:
+transaction declares authority '{"actor":"voice.hypha","permission":"active"}', but does not have signatures for it.
+
+~/play/hypha/voice-token feature/v1_voice_reset*
+❯ cleost push action voice.hypha transfer '{ 
+        "from":"owner",
+        "to":"seedsuseraaa",
+        "quantity":"1.00 HVOICE",
+        "memo":""
+}' -p owner@active
+
+Error 3090003: Provided keys, permissions, and delays do not satisfy declared authorizations
+Ensure that you have the related private keys inside your wallet and your wallet is unlocked.
+Error Details:
+transaction declares authority '{"actor":"owner","permission":"active"}', but does not have signatures for it.
+
+~/play/hypha/voice-token feature/v1_voice_reset*
+❯ cleos get account seedsuseraaa
+created: 2022-01-08T22:11:21.000
+permissions: 
+     owner     1:    1 EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
+        active     1:    1 EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
+memory: 
+     quota:       unlimited  used:     3.004 KiB  
+
+net bandwidth: 
+     used:               unlimited
+     available:          unlimited
+     limit:              unlimited
+
+cpu bandwidth:
+     used:               unlimited
+     available:          unlimited
+     limit:              unlimited
+
+subjective cpu bandwidth:
+     used:                 0 us   
+
+
+
+~/play/hypha/voice-token feature/v1_voice_reset*
+❯ cleost push action voice.hypha transfer '{ 
+        "from":"owner",
+        "to":"cle",
+        "quantity":"1.00 HVOICE",
+        "memo":""
+}' -p owner@active
+
+
+Error 3090003: Provided keys, permissions, and delays do not satisfy declared authorizations
+Ensure that you have the related private keys inside your wallet and your wallet is unlocked.
+Error Details:
+transaction declares authority '{"actor":"owner","permission":"active"}', but does not have signatures for it.
+
+~/play/hypha/voice-token feature/v1_voice_reset*
+❯ cleos push action voice.hypha transfer '{ 
+        "from":"owner",
+        "to":"cle",
+        "quantity":"1.00 HVOICE",
+        "memo":""
+}' -p owner@active
+
+Error 3050003: eosio_assert_message assertion failure
+Error Details:
+assertion failure with message: to account does not exist
+pending console output: 
+
+~/play/hypha/voice-token feature/v1_voice_reset*
+❯ cleos push action voice.hypha transfer '{ 
+        "from":"owner",
+        "to":"seedsuseraaa",
+        "quantity":"1.00 HVOICE",
+        "memo":""
+}' -p owner@active
+
+executed transaction: d34680b112ac332b288f9f49cd355196b6ab9c3aed28ef66300bc730f7ac5e73  128 bytes  3316 us
+#   voice.hypha <= voice.hypha::transfer        {"from":"owner","to":"seedsuseraaa","quantity":"1.00 HVOICE","memo":""}
+#         owner <= voice.hypha::transfer        {"from":"owner","to":"seedsuseraaa","quantity":"1.00 HVOICE","memo":""}
+#  seedsuseraaa <= voice.hypha::transfer        {"from":"owner","to":"seedsuseraaa","quantity":"1.00 HVOICE","memo":""}
+warning: transaction executed locally, but may not be confirmed by the network yet         ] 
+
+~/play/hypha/voice-token feature/v1_voice_reset*
+❯ cleos push action voice.hypha transfer '{ 
+        "from":"owner",
+        "to":"seedsuserbbb",
+        "quantity":"1.00 HVOICE",
+        "memo":""
+}' -p owner@active
+
+executed transaction: fd97aca4b20b20854abffced5ed758a790280151967d4c97cd36476f4e81adbe  128 bytes  1247 us
+#   voice.hypha <= voice.hypha::transfer        {"from":"owner","to":"seedsuserbbb","quantity":"1.00 HVOICE","memo":""}
+#         owner <= voice.hypha::transfer        {"from":"owner","to":"seedsuserbbb","quantity":"1.00 HVOICE","memo":""}
+#  seedsuserbbb <= voice.hypha::transfer        {"from":"owner","to":"seedsuserbbb","quantity":"1.00 HVOICE","memo":""}
+warning: transaction executed locally, but may not be confirmed by the network yet         ] 
+
+~/play/hypha/voice-token feature/v1_voice_reset*
+❯ cleos push action voice.hypha transfer '{ 
+        "from":"owner",
+        "to":"seedsuserbbb",
+        "quantity":"19.00 HVOICE",
+        "memo":""
+}' -p owner@active
+
+executed transaction: 41fa4563df4595753574f824d5003e9d9cdc882b7c3aea618192527502eab251  128 bytes  863 us
+#   voice.hypha <= voice.hypha::transfer        {"from":"owner","to":"seedsuserbbb","quantity":"19.00 HVOICE","memo":""}
+#         owner <= voice.hypha::transfer        {"from":"owner","to":"seedsuserbbb","quantity":"19.00 HVOICE","memo":""}
+#  seedsuserbbb <= voice.hypha::transfer        {"from":"owner","to":"seedsuserbbb","quantity":"19.00 HVOICE","memo":""}
+warning: transaction executed locally, but may not be confirmed by the network yet         ] 
+
+~/play/hypha/voice-token feature/v1_voice_reset*
+❯ cleos push action voice.hypha transfer '{ 
+        "from":"owner",
+        "to":"seedsuserccc",
+        "quantity":"5001.00 HVOICE",
+        "memo":""
+}' -p owner@active
+
+executed transaction: 95db4f5332121be07f94f2655fee9665219a5614bc15f2cfb41664f7fd32b1e6  128 bytes  1099 us
+#   voice.hypha <= voice.hypha::transfer        {"from":"owner","to":"seedsuserccc","quantity":"5001.00 HVOICE","memo":""}
+#         owner <= voice.hypha::transfer        {"from":"owner","to":"seedsuserccc","quantity":"5001.00 HVOICE","memo":""}
+#  seedsuserccc <= voice.hypha::transfer        {"from":"owner","to":"seedsuserccc","quantity":"5001.00 HVOICE","memo":""}
+warning: transaction executed locally, but may not be confirmed by the network yet         ] 
+
+~/play/hypha/voice-token feature/v1_voice_reset*
+❯ cleos get table voice.hypha seedsuseraaa accounts
+{
+  "rows": [{
+      "balance": "1.00 HVOICE",
+      "last_decay_period": 1641907896
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+
+~/play/hypha/voice-token feature/v1_voice_reset*
+❯ cleos get table voice.hypha seedsuserccc accounts
+{
+  "rows": [{
+      "balance": "5001.00 HVOICE",
+      "last_decay_period": 1641907938
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+
+~/play/hypha/voice-token feature/v1_voice_reset*
+❯ cleos get table voice.hypha seedsuserbbb accounts
+{
+  "rows": [{
+      "balance": "20.00 HVOICE",
+      "last_decay_period": 1641907917
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+
+~/play/hypha/voice-token feature/v1_voice_reset*
+❯ cleos push action voice.hypha voicereset '{ 
+        "account":"seedsuseraaa",
+}' -p owner@active
+
+Error 3015014: Pack data exception
+Error Details:
+Missing field 'owner' in input object while processing struct 'voicereset'
+
+~/play/hypha/voice-token feature/v1_voice_reset*
+❯ cleos push action voice.hypha voicereset '{ 
+        "owner":"seedsuseraaa",
+}' -p owner@active
+
+Error 3090004: Missing required authority
+Ensure that you have the related authority inside your transaction!;
+If you are currently using 'cleos push action' command, try to add the relevant authority using -p option.
+Error Details:
+missing authority of voice.hypha
+pending console output: 
+
+~/play/hypha/voice-token feature/v1_voice_reset*
+❯ cleos push action voice.hypha voicereset '{ 
+        "owner":"seedsuseraaa",
+}' -p voice.hypha@active
+
+executed transaction: a52b82d15c5006a906b6578bb4df583712323b376fc669466f404af61fa9ea95  104 bytes  670 us
+#   voice.hypha <= voice.hypha::voicereset      {"owner":"seedsuseraaa"}
+warning: transaction executed locally, but may not be confirmed by the network yet         ] 
+
+~/play/hypha/voice-token feature/v1_voice_reset*
+❯ cleos get table voice.hypha seedsuseraaa accounts
+{
+  "rows": [{
+      "balance": "1.00 HVOICE",
+      "last_decay_period": 1641907896
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+
+~/play/hypha/voice-token feature/v1_voice_reset*
+❯ cleos push action voice.hypha voicereset '{      
+        "owner":"seedsuserbbb",
+}' -p voice.hypha@active
+
+executed transaction: f3e07056390aa67730b7e8bca03b97f03df24212e644e87de571f701a691b113  104 bytes  604 us
+#   voice.hypha <= voice.hypha::voicereset      {"owner":"seedsuserbbb"}
+warning: transaction executed locally, but may not be confirmed by the network yet         ] 
+
+~/play/hypha/voice-token feature/v1_voice_reset*
+❯ cleos get table voice.hypha seedsuserbbb accounts
+{
+  "rows": [{
+      "balance": "5000.00 HVOICE",
+      "last_decay_period": 1641907917
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+
+~/play/hypha/voice-token feature/v1_voice_reset*
+❯ cleos get table voice.hypha seedsuserccc accounts
+{
+  "rows": [{
+      "balance": "5001.00 HVOICE",
+      "last_decay_period": 1641907938
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+
+~/play/hypha/voice-token feature/v1_voice_reset*
+❯ cleos push action voice.hypha voicereset '{      
+        "owner":"seedsuserccc",
+}' -p voice.hypha@active
+
+executed transaction: ab32e14bd3f23f14fe10907de40bfe5541a5670b57710ec063ccfe87fe923038  104 bytes  837 us
+#   voice.hypha <= voice.hypha::voicereset      {"owner":"seedsuserccc"}
+warning: transaction executed locally, but may not be confirmed by the network yet         ] 
+
+~/play/hypha/voice-token feature/v1_voice_reset*
+❯ cleos get table voice.hypha seedsuserccc accounts
+{
+  "rows": [{
+      "balance": "5000.00 HVOICE",
+      "last_decay_period": 1641907938
+    }
+  ],
+  "more": false,
+  "next_key": ""
+}
+
+~/play/hypha/voice-token feature/v1_voice_reset*
+❯ 
