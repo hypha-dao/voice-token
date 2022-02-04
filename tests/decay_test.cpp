@@ -112,6 +112,18 @@ void test_decay_multiple_decays() {
     assert(time == ONE_DAY_SECONDS * 10);
 }
 
+void test_decay_case_01() {
+    auto result = hypha::decay(25000, 1643242138, hypha::DecayConfig{
+            .decayPeriod    = ONE_DAY_SECONDS,
+            .evaluationTime = 1643328539,
+            .decayPerPeriod = 0.50 // 2%
+    });
+
+    assert(result.needsUpdate == true);
+    assert(result.newBalance == 12500);
+    assert(result.newPeriod == 1643328538);
+}
+
 int main(int argc, char** argv) {
     test_decay_one_period();
     test_decay_one_period_not_exact();
@@ -121,5 +133,6 @@ int main(int argc, char** argv) {
     test_decay_one_after_other();
     test_decay_period_evaluated_in_the_past();
     test_decay_multiple_decays();
+    test_decay_case_01();
     return 0;
 }
