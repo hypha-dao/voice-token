@@ -3,11 +3,56 @@
 #include <eosio/system.hpp>
 #include <document_graph/edge.hpp>
 #include <document_graph/document.hpp>
-#include <trail.hpp>
+#include <tables/old_voice.hpp>
 
 namespace hypha {
 
     constexpr uint64_t DECAY_PER_PERIOD_X10M = 10000000;
+
+    void voice::migratestat(const name& tenant) {
+        require_auth( get_self() );
+        eosio::symbol_code hvoice_symbol_code("hvoice");
+
+        old_voice::stats old_stats(get_self(), hvoice_symbol_code.raw());
+        auto existing = old_stats.find(hvoice_symbol_code.raw());
+        check( existing != old_stats.end(), "token with symbol does not exists" );
+
+        // Copy
+        hypha::stats new_stats(get_self(), hvoice_symbol_code.raw());
+
+        new_stats.emplace( get_self(), [&]( auto& s ) {
+            s.id                     = new_stats.available_primary_key();
+            s.supply.symbol          = existing->supply.symbol;
+            s.max_supply             = existing->max_supply;
+            s.issuer                 = existing->issuer;
+            s.decay_per_period_x10M  = existing->decay_per_period_x10M;
+            s.decay_period           = existing->decay_period;
+            s.tenant                 = tenant;
+        });
+    }
+
+    void voice::migrateacc(const name& tenant, const std::vector<name> accounts) {
+        require_auth( get_self() );
+        eosio::symbol_code hvoice_symbol_code("hvoice");
+
+        for (name account_name: accounts) {
+            old_voice::accounts old_accounts(get_self(), account_name.value);
+
+            const auto old_account = old_accounts.find( hvoice_symbol_code.raw());
+            if (old_account == old_accounts.end()) {
+                continue;
+            }
+
+            hypha::accounts new_accounts(get_self(), account_name.value);
+
+            new_accounts.emplace(get_self(), [&](auto& a) {
+                a.id                = new_accounts.available_primary_key();
+                a.tenant            = tenant;
+                a.balance           = old_account->balance;
+                a.last_decay_period = old_account->last_decay_period;
+            });
+        }
+    }
 
     void voice::del(const name& tenant, const asset& symbol)
     {

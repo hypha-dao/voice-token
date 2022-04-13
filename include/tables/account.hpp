@@ -6,7 +6,7 @@ namespace hypha {
     using eosio::name;
     using eosio::symbol_code;
 
-    struct [[eosio::table("account"), eosio::contract("voice.hypha")]] account {
+    struct [[eosio::table("account.v2"), eosio::contract("voice.hypha")]] account {
         uint64_t id;
         name     tenant;
         asset    balance;
@@ -29,5 +29,5 @@ namespace hypha {
         "bykey"_n,
         eosio::const_mem_fun<account, uint128_t, &account::by_tenant_and_code>
     >;
-    using accounts = eosio::multi_index<"accounts"_n, account, accounts_by_key>;
+    using accounts = eosio::multi_index<"accounts.v2"_n, account, accounts_by_key>;
 }
