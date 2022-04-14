@@ -1,13 +1,13 @@
 #include <eosio/eosio.hpp>
 
 namespace old_voice {
-    struct [[eosio::table]] account {
+    struct [[eosio::table, eosio::contract("voice.hypha")]] account {
         eosio::asset    balance;
         uint64_t last_decay_period;
         uint64_t primary_key() const { return balance.symbol.code().raw(); }
     };
 
-    struct [[eosio::table]] currency_stats {
+    struct [[eosio::table, eosio::contract("voice.hypha")]] currency_stats {
         eosio::asset    supply;
         eosio::asset    max_supply;
         eosio::name     issuer;
