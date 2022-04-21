@@ -20,6 +20,21 @@ class [[eosio::contract("voice.hypha")]] voice : public eosio::contract {
     public:
         using contract::contract;
 
+        /**
+        * Migrates from old single tenant tables to the multitenant table (stat_v2).
+        * @param tenant target tenant to put the results in
+        */
+        [[eosio::action]]
+        void migratestat(const name& tenant);
+
+        /**
+        * Migrates from old single tenant tables to the multitenant table (account_v2).
+        * @param tenant target tenant to put the results in
+        * @param accounts Accounts to migrate
+        */
+        [[eosio::action]]
+        void migrateacc(const name& tenant, const std::vector<name> accounts);
+
         [[eosio::action]]
         void del(const name& tenant, const asset&   symbol);
 
@@ -106,7 +121,7 @@ class [[eosio::contract("voice.hypha")]] voice : public eosio::contract {
         {
             stats statstable( token_contract_account, sym_code.raw() );
             auto index = statstable.get_index<name("bykey")>();
-            const auto& st = index.get( currency_stats::build_key(tenant, sym_code));
+            const auto& st = index.get( currency_statsv2::build_key(tenant, sym_code));
             return st.supply;
         }
 
@@ -114,7 +129,7 @@ class [[eosio::contract("voice.hypha")]] voice : public eosio::contract {
         {
             accounts accountstable( token_contract_account, owner.value );
             auto index = accountstable.get_index<name("bykey")>();
-            const auto& ac = index.get( account::build_key(tenant, sym_code));
+            const auto& ac = index.get( accountv2::build_key(tenant, sym_code));
             return ac.balance;
         }
 
