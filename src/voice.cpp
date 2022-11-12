@@ -245,6 +245,21 @@ namespace hypha {
         }
     }
 
+    void voice::moddecay(const name& tenant, symbol symbol, uint64_t new_decay_period, uint64_t new_decay_per_periox_x10m)
+    {
+        require_auth( get_self() );
+        
+        stats statstable( get_self(), symbol.code().raw() );
+        auto index = statstable.get_index<name("bykey")>();
+        auto existing = index.find( currency_statsv2::build_key(tenant, symbol.code()) );
+        check( existing != index.end(), "token with symbol and tenant does not exist, create token before editing it" );
+
+        index.modify(existing, same_payer, [&](currency_statsv2& stat) {
+            stat.decay_period = new_decay_period;
+            stat.decay_per_period_x10M = new_decay_per_periox_x10m;
+        });
+    }
+
     void voice::sub_balance(const name& tenant, const name& owner, const asset& value ) {
         this->decay(tenant, owner, value.symbol);
         accounts from_acnts( get_self(), owner.value );

@@ -101,6 +101,17 @@ class [[eosio::contract("voice.hypha")]] voice : public eosio::contract {
         ACTION decay(const name& tenant, const name& owner, symbol symbol);
 
         /**
+         * @brief Edits the decay config values
+         * 
+         * @param tenant 
+         * @param symbol 
+         * @param new_decay_period 
+         * @param new_decay_per_periox_x10m 
+         * @return ACTION 
+         */
+        ACTION moddecay(const name& tenant, symbol symbol, uint64_t new_decay_period, uint64_t new_decay_per_periox_x10m);
+
+        /**
          * Allows `ram_payer` to create an account `owner` with zero balance for
          * token `symbol` at the expense of `ram_payer`.
          *
