@@ -192,6 +192,8 @@ namespace hypha {
         check( memo.size() <= 256, "memo has more than 256 bytes" );
 
         sub_balance( tenant, from, quantity );
+        
+        update_issued(tenant, -1 * quantity);
     }
 
 
