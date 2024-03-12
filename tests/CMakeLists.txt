@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.28)
 project(voice.hypha.tests)
 find_package(eosio.cdt)
 

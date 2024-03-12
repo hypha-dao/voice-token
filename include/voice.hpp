@@ -86,6 +86,20 @@ class [[eosio::contract("voice.hypha")]] voice : public eosio::contract {
                        const asset&   quantity,
                        const string&  memo );
 
+        /**
+          * Allows `to` account to burn `quantity` tokens. The tokens are destroyed and removed
+          * from the stats table and the account. 
+          *
+          * @param from - the account to burn tokens from,
+          * @param quantity - the quantity of tokens to be transferred,
+          * @param memo - the memo string to accompany the transaction.
+          */
+        [[eosio::action]]
+        void burn( const name&    tenant,
+                       const name&    from,
+                       const asset&   quantity,
+                       const string&  memo );
+
 
         // Runs decaying actions
         ACTION decay(const name& tenant, const name& owner, symbol symbol);
