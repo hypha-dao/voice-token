@@ -95,7 +95,7 @@ class [[eosio::contract("voice.hypha")]] voice : public eosio::contract {
           * @param memo - the memo string to accompany the transaction.
           */
         [[eosio::action]]
-        void burn( const name&    tenant,
+        void burnvoice( const name&    tenant,
                        const name&    from,
                        const asset&   quantity,
                        const string&  memo );

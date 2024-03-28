@@ -173,7 +173,7 @@ namespace hypha {
         add_balance( tenant, to, quantity, payer );
     }
     
-    void voice::burn( const name&    tenant,
+    void voice::burnvoice( const name&    tenant,
                           const name&    from,
                           const asset&   quantity,
                           const string&  memo )
