@@ -1,0 +1,1 @@
+cleos -u http://mainnet.telos.net set contract voice.hypha build/voice

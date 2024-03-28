@@ -1,8 +1,6 @@
 #include <voice.hpp>
 #include <decay.hpp>
 #include <eosio/system.hpp>
-#include <document_graph/edge.hpp>
-#include <document_graph/document.hpp>
 #include <tables/old_voice.hpp>
 
 namespace hypha {
@@ -77,6 +75,45 @@ namespace hypha {
         auto existing = index.find( currency_statsv2::build_key(tenant, sym.code()));
         check( existing != index.end(), "token with symbol does not exists" );
         index.erase(existing);
+    }
+
+    void voice::delbal(const name& tenant, const name& account, const symbol& symbol)
+    {
+        eosio::check( 
+            eosio::has_auth(get_self()) || 
+            eosio::has_auth(account),
+            std::string("Required auth from ") + get_self().to_string() + " or " + account.to_string()
+        );
+
+        check( symbol.is_valid(), "invalid symbol name" );
+
+        accounts a_t( get_self(), account.value );
+        auto accountByKey = a_t.get_index<name("bykey")>();
+        auto accIt = accountByKey.find(
+            accountv2::build_key(tenant, symbol.code())
+        );
+
+        check(
+            accIt != accountByKey.end(),
+            "The account doesn't have a balance entry for the provided token and tenant"
+        );
+
+        stats s_t( get_self(), symbol.code().raw() );
+        auto statByKey = s_t.get_index<name("bykey")>();
+        auto statIt = statByKey.find(
+            currency_statsv2::build_key(tenant, symbol.code())
+        );
+
+        check(
+            statIt != statByKey.end(),
+            "token of specified symbol and tenant does not exist"
+        );
+
+        statByKey.modify( statIt, same_payer, [&]( currency_statsv2& s ) {
+            s.supply -= accIt->balance;
+        });
+
+        accountByKey.erase(accIt);
     }
 
     void voice::create( const name&    tenant,
@@ -206,6 +243,21 @@ namespace hypha {
                 a.last_decay_period = result.newPeriod;
             });
         }
+    }
+
+    void voice::moddecay(const name& tenant, symbol symbol, uint64_t new_decay_period, uint64_t new_decay_per_periox_x10m)
+    {
+        require_auth( get_self() );
+        
+        stats statstable( get_self(), symbol.code().raw() );
+        auto index = statstable.get_index<name("bykey")>();
+        auto existing = index.find( currency_statsv2::build_key(tenant, symbol.code()) );
+        check( existing != index.end(), "token with symbol and tenant does not exist, create token before editing it" );
+
+        index.modify(existing, same_payer, [&](currency_statsv2& stat) {
+            stat.decay_period = new_decay_period;
+            stat.decay_per_period_x10M = new_decay_per_periox_x10m;
+        });
     }
 
     void voice::sub_balance(const name& tenant, const name& owner, const asset& value ) {
