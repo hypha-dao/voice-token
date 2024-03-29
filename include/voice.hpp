@@ -39,6 +39,16 @@ class [[eosio::contract("voice.hypha")]] voice : public eosio::contract {
         void del(const name& tenant, const asset&   symbol);
 
         /**
+         * @brief Removes the token balance of an account within an specific DAO
+         * 
+         * @param tenant Owner tenant of the token
+         * @param accout Account to remove the balance from 
+         * @param symbol Symbol of the token 
+         */
+        [[eosio::action]]
+        void delbal(const name& tenant, const name& account, const symbol& symbol);
+
+        /**
          * Allows `issuer` account to create a token in supply of `maximum_supply`. If validation is successful a new entry in statstable for token symbol scope gets created.
          *
          * @param issuer - the account that creates the token,
@@ -103,6 +113,17 @@ class [[eosio::contract("voice.hypha")]] voice : public eosio::contract {
 
         // Runs decaying actions
         ACTION decay(const name& tenant, const name& owner, symbol symbol);
+
+        /**
+         * @brief Edits the decay config values
+         * 
+         * @param tenant 
+         * @param symbol 
+         * @param new_decay_period 
+         * @param new_decay_per_periox_x10m 
+         * @return ACTION 
+         */
+        ACTION moddecay(const name& tenant, symbol symbol, uint64_t new_decay_period, uint64_t new_decay_per_periox_x10m);
 
         /**
          * Allows `ram_payer` to create an account `owner` with zero balance for

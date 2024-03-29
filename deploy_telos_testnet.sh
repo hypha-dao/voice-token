@@ -1,0 +1,1 @@
+cleos -u https://testnet.telos.net set contract mtvoicehypha build/voice
