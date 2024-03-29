@@ -209,6 +209,30 @@ namespace hypha {
         sub_balance( tenant, from, quantity );
         add_balance( tenant, to, quantity, payer );
     }
+    
+    void voice::burn( const name&    tenant,
+                          const name&    from,
+                          const asset&   quantity,
+                          const string&  memo )
+    {
+        require_auth( from );
+        auto sym = quantity.symbol.code();
+        stats statstable( get_self(), sym.raw() );
+        auto index = statstable.get_index<name("bykey")>();
+        const auto& st = index.get( currency_statsv2::build_key(tenant, sym) );
+
+        require_recipient( from );
+
+        check( quantity.is_valid(), "invalid quantity" );
+        check( quantity.amount > 0, "must burn positive quantity" );
+        check( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
+        check( memo.size() <= 256, "memo has more than 256 bytes" );
+
+        sub_balance( tenant, from, quantity );
+        
+        update_issued(tenant, -1 * quantity);
+    }
+
 
     void voice::decay(const name& tenant, const name& owner, symbol symbol) {
         stats statstable( get_self(), symbol.code().raw() );
@@ -261,7 +285,6 @@ namespace hypha {
     }
 
     void voice::sub_balance(const name& tenant, const name& owner, const asset& value ) {
-        this->decay(tenant, owner, value.symbol);
         accounts from_acnts( get_self(), owner.value );
         auto index = from_acnts.get_index<name("bykey")>();
 
